@@ -5,14 +5,13 @@ from pydub import AudioSegment
 def download_audio_from_youtube(youtube_url, output_folder):
     # 유튜브 영상 다운로드
     yt = YouTube(youtube_url)
-    # video_stream = yt.streams.filter(only_audio=True).first()
-    downloaded_file = yt.streams.filter(res="720p").first().download('./downloads')
+    video_stream = yt.streams.filter(res="720p").first()
     
-    # if not video_stream:
-    #     print("오디오 스트림을 찾을 수 없습니다.")
-    #     return
+    if not video_stream:
+        print("오디오 스트림을 찾을 수 없습니다.")
+        return
     
-    # downloaded_file = video_stream.download(output_path=output_folder)
+    downloaded_file = video_stream.download(output_path=output_folder)
     
     # 다운로드된 파일의 확장자를 변경하여 파일명 가져오기
     base, ext = os.path.splitext(downloaded_file)
@@ -29,13 +28,12 @@ def download_audio_from_youtube(youtube_url, output_folder):
     audio.export(new_file, format='mp3')
     
     # 원본 파일 삭제 (mp4)
-    os.remove(downloaded_file)
+    # os.remove(downloaded_file)
     
     print(f"MP3 파일이 다음 경로에 저장되었습니다: {new_file}")
 
 # 예시 사용법
-# youtube_url = 'https://www.youtube.com/watch?v=YOUR_VIDEO_ID'
-youtube_url = 'https://www.youtube.com/watch?v=0wHduLk0Obw'
+youtube_url = 'https://www.youtube.com/watch?v=YOUR_VIDEO_ID'
 
 output_folder = './downloads'  # 저장할 폴더 경로
 os.makedirs(output_folder, exist_ok=True)
