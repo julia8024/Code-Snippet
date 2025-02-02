@@ -1,42 +1,48 @@
 import os
-from pytube import YouTube
+import shutil
+from yt_dlp import YoutubeDL
 from pydub import AudioSegment
 
-def download_audio_from_youtube(youtube_url, output_folder):
-    # 유튜브 영상 다운로드
-    yt = YouTube(youtube_url)
-    video_stream = yt.streams.filter(res="720p").first()
-    
-    if not video_stream:
-        print("오디오 스트림을 찾을 수 없습니다.")
-        return
-    
-    downloaded_file = video_stream.download(output_path=output_folder)
-    
-    # 다운로드된 파일의 확장자를 변경하여 파일명 가져오기
-    base, ext = os.path.splitext(downloaded_file)
-    new_file = base + '.mp3'
-    
-    # AudioSegment를 사용하여 mp4를 mp3로 변환
-    audio = AudioSegment.from_file(downloaded_file)
+def check_ffmpeg_installed():
+    """FFmpeg가 설치되어 있는지 확인하는 함수"""
+    if shutil.which("ffmpeg") is None:
+        print("⚠ FFmpeg가 설치되지 않았습니다. 'pydub'을 사용하려면 FFmpeg가 필요합니다.")
+        print("설치 방법:")
+        print(" - Windows: https://ffmpeg.org/download.html 에서 다운로드 후 환경 변수 설정")
+        print(" - macOS: brew install ffmpeg (Homebrew 필요)")
+        print(" - Linux: sudo apt install ffmpeg 또는 sudo yum install ffmpeg")
+        exit(1)
 
-    # 오디오의 길이가 원본 영상의 길이와 일치하는지 확인
-    video_length = yt.length * 1000  # 비디오 길이를 밀리초로 변환
-    audio = audio[:video_length]  # 비디오 길이만큼 오디오를 자름
+def download_audio(youtube_url, output_folder):
+    """유튜브에서 오디오를 다운로드하고 MP3로 변환하는 함수"""
 
-    # mp3로 내보내기
-    audio.export(new_file, format='mp3')
+    # FFmpeg 설치 확인
+    check_ffmpeg_installed()
+
+    os.makedirs(output_folder, exist_ok=True)
+
+    # yt-dlp 다운로드 옵션 설정
+    ydl_opts = {
+        'format': 'bestaudio/best',  # 가장 좋은 오디오 품질 선택
+        'outtmpl': f"{output_folder}/%(title)s.%(ext)s",  # 파일명 지정
+        'postprocessors': [{
+            'key': 'FFmpegExtractAudio',
+            'preferredcodec': 'mp3',
+            'preferredquality': '192',
+        }],
+    }
+
+    # yt-dlp 실행
+    with YoutubeDL(ydl_opts) as ydl:
+        print("🔽 유튜브 오디오 다운로드 중...")
+        info = ydl.extract_info(youtube_url, download=True)
+        filename = f"{output_folder}/{info['title']}.mp3"
     
-    # 원본 파일 삭제 (mp4)
-    # os.remove(downloaded_file)
-    
-    print(f"MP3 파일이 다음 경로에 저장되었습니다: {new_file}")
+    print(f"✅ MP3 파일이 저장되었습니다: {filename}")
 
 # 예시 사용법
-youtube_url = 'https://www.youtube.com/watch?v=YOUR_VIDEO_ID'
+youtube_url = "https://www.youtube.com/watch?v=YOUR_VIDEO_ID"
+output_folder = "./downloads"
 
-output_folder = './downloads'  # 저장할 폴더 경로
-os.makedirs(output_folder, exist_ok=True)
-download_audio_from_youtube(youtube_url, output_folder)
-
-
+# 유튜브 오디오 다운로드 및 MP3 변환 실행
+download_audio(youtube_url, output_folder)
