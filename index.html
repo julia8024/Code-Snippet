@@ -139,11 +139,11 @@
 			<div class="preview" id="preview"></div>
 		</div>
 		<div class="flex-box">
-			<div class="result-box" id="resultHex8">HEX8: #2C2C2C66</div>
+			<div class="result-box">HEX8:&nbsp;<span id="resultHex8">#2C2C2C66</span></div>
 			<button onclick="copyToClipboard('resultHex8')">복사하기</button>
 		</div>
 		<div class="flex-box">
-			<div class="result-box" id="resultRgba">RGBA: rgba(44,44,44,0.4)</div>
+			<div class="result-box">RGBA:&nbsp;<span id="resultRgba">rgba(44,44,44,0.4)</span></div>
 			<button onclick="copyToClipboard('resultRgba')">복사하기</button>
 		</div>
 	</div>
@@ -195,8 +195,8 @@
 			const hex8 = addAlphaToHex(hex, opacity);
 			const rgb = hexToRgb(hex);
 
-			resultHex8.textContent = `HEX8: ${hex8}`;
-			resultRgba.textContent = `RGBA: rgba(${rgb.r},${rgb.g},${rgb.b},${(opacity / 100).toFixed(2)})`;
+			resultHex8.textContent = `${hex8}`;
+			resultRgba.textContent = `rgba(${rgb.r},${rgb.g},${rgb.b},${(opacity / 100).toFixed(2)})`;
 			opacityValue.textContent = opacity;
 			preview.style.backgroundColor = hex;
 			preview.style.opacity = opacity / 100;
@@ -223,7 +223,7 @@
 		hex8Input.addEventListener('input', updateFromHex8);
 
 		function copyToClipboard(id) {
-			const text = document.getElementById(id).toString();
+			const text = document.getElementById(id).textContent;
 			navigator.clipboard.writeText(text)
 				.then(() => alert('복사되었습니다!'))
 				.catch(() => alert('복사 실패'));
