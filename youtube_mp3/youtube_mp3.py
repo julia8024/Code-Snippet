@@ -41,8 +41,20 @@ def download_audio(youtube_url, output_folder):
     print(f"✅ MP3 파일이 저장되었습니다: {filename}")
 
 # 예시 사용법
-youtube_url = "https://www.youtube.com/watch?v=YOUR_VIDEO_ID"
+youtube_url = "https://www.youtube.com/watch?v=m-HftrXHUOM"
 output_folder = "./downloads"
+
+# urls = ["https://www.youtube.com/watch?v=UIBmWmDP1RU",
+#         "https://www.youtube.com/watch?v=tEwpBUxNCJg",
+#         "https://www.youtube.com/watch?v=dErmidl5fA8",
+#         "https://www.youtube.com/watch?v=qMpxm-6-hLc"]
+
+
+# for i in urls:
+#     download_audio(i, output_folder)
+
 
 # 유튜브 오디오 다운로드 및 MP3 변환 실행
 download_audio(youtube_url, output_folder)
+
+# 실행 : python3 youtube_mp3.py
